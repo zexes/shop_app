@@ -47,6 +47,12 @@ class ProductsProvider with ChangeNotifier {
     return UnmodifiableListView(_items);
   }
 
+  List<Product> get favoriteItems {
+    return UnmodifiableListView(_items)
+        .where((item) => item.isFavorite)
+        .toList();
+  }
+
   Product findById(String id) {
     return _items.firstWhere((data) => data.id == id);
   }
