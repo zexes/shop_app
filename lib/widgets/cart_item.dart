@@ -45,12 +45,29 @@ class CartItem extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.0),
             ),
             subtitle: Text(
-              'Total: \$${(price * quantity)}',
+              'Total: \$${(price * quantity).toStringAsFixed(2)}',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
             ),
-            trailing: Text(
-              '$quantity x',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.0),
+            trailing: Material(
+              type: MaterialType.transparency,
+              color: Colors.transparent,
+              child: Consumer<Cart>(builder: (_, cart, __) {
+                return InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  onTap: () {
+                    cart.removeSingleQuantity(productId);
+                  },
+                  onDoubleTap: () {
+                    cart.addSameTypeQuantity(productId);
+                  },
+                  splashColor: Theme.of(context).accentColor,
+                  child: Text(
+                    '$quantity x',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w900, fontSize: 18.0),
+                  ),
+                );
+              }),
             ),
           ),
         ),
