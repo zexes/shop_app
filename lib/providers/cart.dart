@@ -27,6 +27,18 @@ class Cart with ChangeNotifier {
     return _items.length;
   }
 
+  List<CartItem> get itemValues {
+    return UnmodifiableMapView(_items).values.toList();
+  }
+
+  double get totalAmount {
+    double total = 0.0;
+    _items.forEach((key, cartItem) {
+      total += cartItem.price * cartItem.quantity;
+    });
+    return total;
+  }
+
   void addItem({String id, double price, String title}) {
     //no quantity cos we can only ass one cart item per time
     if (_items.containsKey(id)) {
