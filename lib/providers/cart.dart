@@ -27,6 +27,10 @@ class Cart with ChangeNotifier {
     return _items.length;
   }
 
+  List<String> get itemKeys {
+    return UnmodifiableMapView(_items).keys.toList();
+  }
+
   List<CartItem> get itemValues {
     return UnmodifiableMapView(_items).values.toList();
   }
@@ -61,6 +65,11 @@ class Cart with ChangeNotifier {
         ),
       );
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
     notifyListeners();
   }
 }

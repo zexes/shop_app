@@ -10,6 +10,7 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
     final cartItems = cart.itemValues;
+    final cartKeys = cart.itemKeys;
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Cart'),
@@ -52,6 +53,7 @@ class CartScreen extends StatelessWidget {
             child: ListView.builder(
               itemBuilder: (_, index) => CartItem(
                   id: cartItems[index].id,
+                  productId: cartKeys[index],
                   title: cartItems[index].title,
                   price: cartItems[index].price,
                   quantity: cartItems[index].quantity),
