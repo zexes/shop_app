@@ -83,8 +83,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
         Provider.of<ProductsProvider>(context, listen: false);
     if (_editedProduct.id != null) {
       providerProducts.updateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      providerProducts.addProduct(_editedProduct);
     }
-    providerProducts.addProduct(_editedProduct);
     Navigator.of(context).pop();
   }
 
