@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/products_provider.dart';
 import '../providers/product.dart';
 
 class EditProductScreen extends StatefulWidget {
@@ -47,7 +49,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (!isValid) {
       return;
     }
-    _form.currentState.save();
+    _form.currentState
+        .save(); //updated _editedProduct above when save is called in the fields below
+    Provider.of<ProductsProvider>(context, listen: false)
+        .addProduct(_editedProduct);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -171,9 +177,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           } else if (!value.startsWith('http') ||
                               !value.startsWith('https')) {
                             return 'Please enter a valid URL';
-                          } else if (!value.toLowerCase().endsWith('.png') ||
-                              !value.toLowerCase().endsWith('.jpg') ||
-                              !value.toLowerCase().endsWith('.jpeg')) {
+                          } else if (!value.endsWith('.png') &&
+                              !value.endsWith('.jpg') &&
+                              !value.endsWith('.jpeg')) {
                             return 'Please enter a valid image URL';
                           }
                           return null;
