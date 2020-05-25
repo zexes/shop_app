@@ -1,7 +1,9 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'product.dart';
+import 'package:http/http.dart' as http;
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [
@@ -58,17 +60,22 @@ class ProductsProvider with ChangeNotifier {
   }
 
   void addProduct(Product product) {
-//    _items.add(value);
-    final newProduct = Product(
-      id: DateTime.now().toString(),
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-    );
-    _items.add(newProduct);
-//    _items.insert(0, newProduct); // in order to preped tolist
-    notifyListeners();
+    const url = 'https://max-flutter-base.firebaseio.com/products.json';
+    http.post(url, body: json.encode(product.toMap())).then((response) {
+      if (response.statusCode != 200) return;
+      final productOnServerId = json.decode(response.body)['name'];
+      print(productOnServerId);
+      final newProduct = Product(
+        id: productOnServerId,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      );
+      _items.add(newProduct);
+//    _items.insert(0, newProduct); // in order to prepend to list
+      notifyListeners();
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
