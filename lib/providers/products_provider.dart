@@ -59,9 +59,9 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((data) => data.id == id);
   }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     const url = 'https://max-flutter-base.firebaseio.com/products.json';
-    http.post(url, body: json.encode(product.toMap())).then((response) {
+    return http.post(url, body: json.encode(product.toMap())).then((response) {
       if (response.statusCode != 200) return;
       final productOnServerId = json.decode(response.body)['name'];
       print(productOnServerId);
