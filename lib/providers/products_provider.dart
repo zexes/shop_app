@@ -59,9 +59,10 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((data) => data.id == id);
   }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     const url = 'https://max-flutter-base.firebaseio.com/products.json';
-    return http.post(url, body: json.encode(product.toMap())).then((response) {
+    try {
+      final response = await http.post(url, body: json.encode(product.toMap()));
       if (response.statusCode != 200) return;
       final productOnServerId = json.decode(response.body)['name'];
       print(productOnServerId);
@@ -75,10 +76,10 @@ class ProductsProvider with ChangeNotifier {
       _items.add(newProduct);
 //    _items.insert(0, newProduct); // in order to prepend to list
       notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       print(error);
-      throw error; // throws it back to the creator
-    });
+      throw error;
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
