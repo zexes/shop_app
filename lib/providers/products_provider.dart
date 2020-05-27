@@ -75,6 +75,9 @@ class ProductsProvider with ChangeNotifier {
       _items.add(newProduct);
 //    _items.insert(0, newProduct); // in order to prepend to list
       notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error; // throws it back to the creator
     });
   }
 
