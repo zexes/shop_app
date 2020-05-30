@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import '../model/http_exception.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,9 +21,19 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteStatus() {
+  Future<bool> toggleFavoriteStatus() async {
+    final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
+    final response =
+        await http.patch(url, body: json.encode({'isFavorite': isFavorite}));
+    if (response.statusCode >= 400) {
+      isFavorite = oldStatus;
+      notifyListeners();
+      throw HttpException('Failed to mark as favorite.');
+    }
+    return isFavorite;
   }
 
   Map<String, dynamic> toMap() => {
