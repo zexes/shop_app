@@ -104,15 +104,25 @@ class ProductsProvider with ChangeNotifier {
     final productIndex = _items.indexWhere((product) => product.id == id);
     if (productIndex >= 0) {
       final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
-      await http.patch(url, body: json.encode(newProduct.toMapPatch()));
+      await http.patch(url,
+          body: json.encode(newProduct.toMapPatch())); //cloud update
       notifyListeners();
     } else {
       print('...');
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((product) => product.id == id);
+  void deleteProduct(String id) async {
+    final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
+    final existingProductIndex =
+        _items.indexWhere((product) => product.id == id);
+    Product existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex); //removing locally
     notifyListeners();
+    //if any error occur on deleting cloud will not delete hence we should reinsert locally too n probably handle error
+    http.delete(url).then((_) => existingProduct = null).catchError((_) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+    }); // cloud removal
   }
 }
