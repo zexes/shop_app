@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/products_provider.dart';
 import '../widgets/app_drawer.dart';
 import '../screens/cart_screen.dart';
 import '../providers/cart.dart';
@@ -17,6 +18,26 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showOnlyFavorites = false;
+  bool _isInit = true;
+
+  @override
+  void initState() {
+//    Provider.of<ProductsProvider>(context).fetchAndSetProducts(); // work only listen: false
+//    Future.delayed(Duration.zero).then(
+//      (value) => Provider.of<ProductsProvider>(context).fetchAndSetProducts(),
+//    );
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      Provider.of<ProductsProvider>(context).fetchAndSetProducts();
+    }
+    _isInit =
+        false; // since didChangeDependencies run very often we need do this check so as to skip whatever we placed in the parenthesis. Hence runs only when page first loads
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
