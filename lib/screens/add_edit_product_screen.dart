@@ -83,37 +83,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       _isLoading = true;
     });
-    final providerProducts =
-        Provider.of<ProductsProvider>(context, listen: false);
-    setState(() {
-      _isLoading = false;
-    });
-    if (_editedProduct.id != null) {
-      providerProducts.updateProduct(_editedProduct.id, _editedProduct);
-    } else {
-      try {
-        await providerProducts.addProduct(_editedProduct);
-      } catch (error) {
-        await showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-                  title: Text('An error occurred'),
-                  content: Text('Something went wrong'),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Okay'),
-                      onPressed: () => Navigator.of(ctx).pop(),
-                    )
-                  ],
-                ));
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
+
+    try {
+      if (_editedProduct.id != null) {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } else {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .addProduct(_editedProduct);
       }
+    } catch (error) {
+      await _showDialog();
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
     }
 //    Navigator.of(context).pop();
+  }
+
+  Future _showDialog() {
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text('An error occurred'),
+              content: Text('Something went wrong'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Okay'),
+                  onPressed: () => Navigator.of(ctx).pop(),
+                )
+              ],
+            ));
   }
 
   @override

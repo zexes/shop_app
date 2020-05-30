@@ -100,10 +100,11 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final productIndex = _items.indexWhere((product) => product.id == id);
     if (productIndex >= 0) {
-      _items[productIndex] = newProduct;
+      final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
+      await http.patch(url, body: json.encode(newProduct.toMapPatch()));
       notifyListeners();
     } else {
       print('...');

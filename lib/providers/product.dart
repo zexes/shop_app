@@ -30,6 +30,13 @@ class Product with ChangeNotifier {
         'isFavorite': isFavorite
       };
 
+  Map<String, dynamic> toMapPatch() => {
+        "title": title,
+        "description": description,
+        "imageUrl": imageUrl,
+        "price": price,
+      };
+
   static Product toProduct(String id, dynamic obj) {
     return Product(
         id: id,
