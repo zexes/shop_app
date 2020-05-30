@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import '../model/http_exception.dart';
 import 'product.dart';
 import 'package:http/http.dart' as http;
 
@@ -112,17 +113,20 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) async {
-    final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
+  Future<void> deleteProduct(String id) async {
+    final url = 'https://max-flutter-base.firebaseio.com/products/$id';
     final existingProductIndex =
         _items.indexWhere((product) => product.id == id);
     Product existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex); //removing locally
     notifyListeners();
     //if any error occur on deleting cloud will not delete hence we should reinsert locally too n probably handle error
-    http.delete(url).then((_) => existingProduct = null).catchError((_) {
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
-    }); // cloud removal
+      throw HttpException('Could not delete product.');
+    }
+    existingProduct = null;
   }
 }

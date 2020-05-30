@@ -12,6 +12,7 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScaffoldState scaffold = Scaffold.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -31,7 +32,7 @@ class UserProductItem extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () => _showDeleteDialog(context),
+              onPressed: () => _showDeleteDialog(context, scaffold),
               color: Theme.of(context).errorColor,
             ),
           ],
@@ -40,38 +41,52 @@ class UserProductItem extends StatelessWidget {
     );
   }
 
-  Future _showDeleteDialog(BuildContext context) {
-    return showDialog(
+  void _showDeleteDialog(BuildContext context, ScaffoldState scaffold) {
+    showDialog(
         context: context,
-        child: AlertDialog(
-          clipBehavior: Clip.antiAlias,
-          title: Text(
-            'Delete Confirmation!!!',
-            style: TextStyle(color: Color(0xff339900)),
-            textAlign: TextAlign.center,
-          ),
-          content: Text(
-            'Are you sure you want to delete product?',
-            style: TextStyle(color: Theme.of(context).errorColor),
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('No'),
-              onPressed: () => Navigator.of(context).pop(false),
+        builder: (BuildContext context) {
+          return AlertDialog(
+            clipBehavior: Clip.antiAlias,
+            title: Text(
+              'Delete Confirmation!!!',
+              style: TextStyle(color: Color(0xff339900)),
+              textAlign: TextAlign.center,
             ),
-            SizedBox(
-              width: 15,
+            content: Text(
+              'Are you sure you want to delete product?',
+              style: TextStyle(color: Theme.of(context).errorColor),
+              textAlign: TextAlign.center,
             ),
-            FlatButton(
-              child: Text('Yes'),
-              onPressed: () {
-                Provider.of<ProductsProvider>(context, listen: false)
-                    .deleteProduct(id);
-                Navigator.of(context).pop(true);
-              },
-            )
-          ],
-        ));
+            actions: <Widget>[
+              FlatButton(
+                child: Text('No'),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              FlatButton(
+                child: Text('Yes'),
+                onPressed: () async {
+                  try {
+                    await Provider.of<ProductsProvider>(context, listen: false)
+                        .deleteProduct(id);
+                    Navigator.of(context).pop();
+                  } catch (onError) {
+                    scaffold.hideCurrentSnackBar();
+                    Navigator.of(context).pop();
+                    scaffold.showSnackBar(SnackBar(
+                      content: Text(
+                        'Deleting Failed! $onError',
+                        textAlign: TextAlign.center,
+                      ),
+                      backgroundColor: Theme.of(context).accentColor,
+                    ));
+                  }
+                },
+              )
+            ],
+          );
+        });
   }
 }
