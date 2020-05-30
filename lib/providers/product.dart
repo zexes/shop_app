@@ -29,4 +29,14 @@ class Product with ChangeNotifier {
         "price": price,
         'isFavorite': isFavorite
       };
+
+  static Product toProduct(String id, dynamic obj) {
+    return Product(
+        id: id,
+        title: obj['title'],
+        description: obj['description'],
+        price: obj['price'],
+        imageUrl: obj['imageUrl'],
+        isFavorite: obj['isFavorite']);
+  }
 }

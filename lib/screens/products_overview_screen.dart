@@ -19,6 +19,7 @@ class ProductOverviewScreen extends StatefulWidget {
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showOnlyFavorites = false;
   bool _isInit = true;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -32,7 +33,16 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      Provider.of<ProductsProvider>(context).fetchAndSetProducts();
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProductsProvider>(context)
+          .fetchAndSetProducts()
+          .then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
     }
     _isInit =
         false; // since didChangeDependencies run very often we need do this check so as to skip whatever we placed in the parenthesis. Hence runs only when page first loads
@@ -89,7 +99,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductGrid(showOnlyFavorites: _showOnlyFavorites),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ProductGrid(showOnlyFavorites: _showOnlyFavorites),
     );
   }
 }
