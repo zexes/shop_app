@@ -63,9 +63,10 @@ class ProductsProvider with ChangeNotifier {
   Future<void> fetchAndSetProducts() async {
     const url = 'https://max-flutter-base.firebaseio.com/products.json';
     try {
+      final List<Product> loadedProduct = [];
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      final List<Product> loadedProduct = [];
+      if (extractedData == null) return;
       extractedData.forEach((key, value) {
         loadedProduct.add(Product.toProduct(key, value));
       });

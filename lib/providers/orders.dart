@@ -31,8 +31,10 @@ class OrderItem {
     return OrderItem(
         id: id,
         amount: obj['amount'],
-        products: obj['products'],
-        dateTime: obj['dateTime']);
+        products: (obj['products'] as List<dynamic>)
+            .map((item) => CartItem.fromMap(item))
+            .toList(),
+        dateTime: DateTime.parse(obj['dateTime']));
   }
 }
 
@@ -48,12 +50,13 @@ class Orders with ChangeNotifier {
   Future<void> fetchAndSetOrders() async {
     try {
       final response = await http.get(url);
+      final List<OrderItem> loadedOrders = [];
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      final List<OrderItem> loadedProduct = [];
+      if (extractedData == null) return;
       extractedData.forEach((key, value) {
-        loadedProduct.add(OrderItem.toOrderItem(key, value));
+        loadedOrders.add(OrderItem.toOrderItem(key, value));
       });
-      _orders = loadedProduct;
+      _orders = loadedOrders;
       print(json.decode(response.body));
     } catch (error) {
       throw error;

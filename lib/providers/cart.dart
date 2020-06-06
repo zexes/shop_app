@@ -21,6 +21,14 @@ class CartItem {
         'quantity': quantity,
         "price": price,
       };
+
+  static CartItem fromMap(dynamic obj) {
+    return CartItem(
+        id: obj['id'],
+        title: obj['title'],
+        price: obj['price'],
+        quantity: obj['quantity']);
+  }
 }
 
 class Cart with ChangeNotifier {
