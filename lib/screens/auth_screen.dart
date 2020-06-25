@@ -112,11 +112,16 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
+    final provider = Provider.of<Auth>(context, listen: false);
     if (_authMode == AuthMode.Login) {
       // Log user in
+      await provider.signIn(
+        _authData['email'],
+        _authData['password'],
+      );
     } else {
       // Sign user up
-      await Provider.of<Auth>(context, listen: false).signUp(
+      await provider.signUp(
         _authData['email'],
         _authData['password'],
       );
@@ -166,7 +171,7 @@ class _AuthCardState extends State<AuthCard> {
                     }
                   },
                   onSaved: (value) {
-                    _authData['email'] = value;
+                    _authData['email'] = value.trim();
                   },
                 ),
                 TextFormField(
@@ -178,7 +183,7 @@ class _AuthCardState extends State<AuthCard> {
                       return 'Password is too short!';
                   },
                   onSaved: (value) {
-                    _authData['password'] = value;
+                    _authData['password'] = value.trim();
                   },
                 ),
                 if (_authMode == AuthMode.Signup)
