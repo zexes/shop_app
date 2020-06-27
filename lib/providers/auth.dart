@@ -14,19 +14,30 @@ class Auth with ChangeNotifier {
   DateTime _expiryDate;
   String _userId;
 
+  bool get isAuth {
+    return token != null;
+  }
+
+  String get token {
+    if (_expiryDate != null &&
+        _expiryDate.isAfter(DateTime.now()) &&
+        _token != null) return _token;
+    return null;
+  }
+
   Future<String> _urlBuilder(String action) async {
-    final apiKey = await getApiKey();
+    final apiKeyValue = await _apiKey;
     var sb = StringBuffer();
     sb.write(BASE_URL);
     sb.write(action);
     sb.write('?');
     sb.write(URL_KEY);
     sb.write('=');
-    sb.write(apiKey);
+    sb.write(apiKeyValue);
     return sb.toString();
   }
 
-  Future<void> authenticate(String email, String password, String url) async {
+  Future<void> _authenticate(String email, String password, String url) async {
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -35,33 +46,36 @@ class Auth with ChangeNotifier {
             "returnSecureToken": true
           }));
       final responseData = json.decode(response.body);
-      if (responseData['error'] != null) {
+      if (responseData['error'] != null)
         throw HttpException(responseData['error']['message']);
-      }
+//if no error
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expiryDate = DateTime.now()
+          .add(Duration(seconds: int.parse(responseData['expiresIn'])));
     } catch (error) {
       throw error;
+    } finally {
+      print('am here now');
+      notifyListeners();
     }
   }
 
   Future<void> signUp(String email, String password) async {
     const action = 'signUp';
     final url = await _urlBuilder(action);
-
-    return authenticate(email, password, url);
+    return _authenticate(email, password, url);
   }
 
   Future<void> signIn(String email, String password) async {
     const action = 'signInWithPassword';
     final url = await _urlBuilder(action);
-
-    print(">>>>>>>>>>>>>>>>>$url");
-    return authenticate(email, password, url);
+    return _authenticate(email, password, url);
   }
 
-  Future<String> getApiKey() async {
+  Future<String> get _apiKey async {
     Secret sec = await SecretLoader(secretPath: "assets/secrets.json")
         .load(); // Future<Secret>
-    print("key>>>>>>>>>>>>>>>>>>>>>: ${sec.apiKey}");
     return sec.apiKey;
   }
 }
