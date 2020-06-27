@@ -45,6 +45,9 @@ class ProductsProvider with ChangeNotifier {
 //  List<Product> get items{
 //    return [..._items];
 //  }
+  final String token;
+
+  ProductsProvider(this.token, this._items);
 
   List<Product> get items {
     return UnmodifiableListView(_items);
@@ -61,7 +64,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://max-flutter-base.firebaseio.com/products.json';
+    final url =
+        'https://max-flutter-base.firebaseio.com/products.json?auth=$token';
     try {
       final List<Product> loadedProduct = [];
       final response = await http.get(url);
