@@ -25,6 +25,10 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  String get userId {
+    return _userId;
+  }
+
   Future<String> _urlBuilder(String action) async {
     final apiKeyValue = await _apiKey;
     var sb = StringBuffer();

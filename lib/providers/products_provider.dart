@@ -46,8 +46,9 @@ class ProductsProvider with ChangeNotifier {
 //    return [..._items];
 //  }
   final String token;
+  final String userId;
 
-  ProductsProvider(this.token, this._items);
+  ProductsProvider(this.token, this.userId, this._items);
 
   List<Product> get items {
     return UnmodifiableListView(_items);
@@ -64,15 +65,19 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url =
+    var url =
         'https://max-flutter-base.firebaseio.com/products.json?auth=$token';
     try {
       final List<Product> loadedProduct = [];
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) return;
+      url =
+          'https://max-flutter-base.firebaseio.com/userFavorites/$userId.json?auth=$token';
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((key, value) {
-        loadedProduct.add(Product.toProduct(key, value));
+        loadedProduct.add(Product.toProduct(key, value, favoriteData));
       });
       _items = loadedProduct;
       print(json.decode(response.body));

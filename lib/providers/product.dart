@@ -21,14 +21,13 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  Future<bool> toggleFavoriteStatus(String token) async {
+  Future<bool> toggleFavoriteStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     final url =
-        'https://max-flutter-base.firebaseio.com/products/$id.json?auth=$token';
-    final response =
-        await http.patch(url, body: json.encode({'isFavorite': isFavorite}));
+        'https://max-flutter-base.firebaseio.com/userFavorites/$userId/$id.json?auth=$token';
+    final response = await http.put(url, body: json.encode(isFavorite));
     if (response.statusCode >= 400) {
       isFavorite = oldStatus;
       notifyListeners();
@@ -42,7 +41,6 @@ class Product with ChangeNotifier {
         "description": description,
         "imageUrl": imageUrl,
         "price": price,
-        'isFavorite': isFavorite
       };
 
   Map<String, dynamic> toMapPatch() => {
@@ -52,13 +50,13 @@ class Product with ChangeNotifier {
         "price": price,
       };
 
-  static Product toProduct(String id, dynamic obj) {
+  static Product toProduct(String id, dynamic obj, dynamic favoriteData) {
     return Product(
         id: id,
         title: obj['title'],
         description: obj['description'],
         price: obj['price'],
         imageUrl: obj['imageUrl'],
-        isFavorite: obj['isFavorite']);
+        isFavorite: favoriteData == null ? false : favoriteData[id] ?? false);
   }
 }
