@@ -84,7 +84,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://max-flutter-base.firebaseio.com/products.json';
+    final url =
+        'https://max-flutter-base.firebaseio.com/products.json?auth=$token';
     try {
       final response = await http.post(url, body: json.encode(product.toMap()));
       if (response.statusCode != 200) return;
@@ -109,7 +110,8 @@ class ProductsProvider with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final productIndex = _items.indexWhere((product) => product.id == id);
     if (productIndex >= 0) {
-      final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
+      final url =
+          'https://max-flutter-base.firebaseio.com/products/$id.json?auth=$token';
       await http.patch(url,
           body: json.encode(newProduct.toMapPatch())); //cloud update
       notifyListeners();
@@ -119,7 +121,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = 'https://max-flutter-base.firebaseio.com/products/$id.json';
+    final url =
+        'https://max-flutter-base.firebaseio.com/products/$id.json?auth=$token';
     final existingProductIndex =
         _items.indexWhere((product) => product.id == id);
     Product existingProduct = _items[existingProductIndex];

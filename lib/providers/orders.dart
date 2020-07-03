@@ -39,15 +39,19 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  static const url = 'https://max-flutter-base.firebaseio.com/orders.json';
   List<OrderItem> _orders = [];
+  final String authToken;
+
+  Orders(this.authToken, this._orders);
 
   List<OrderItem> get orders {
-//    return [..._orders];
-    return UnmodifiableListView(_orders);
+    return [..._orders];
+    //return UnmodifiableListView(_orders);
   }
 
   Future<void> fetchAndSetOrders() async {
+    final url =
+        'https://max-flutter-base.firebaseio.com/orders.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final List<OrderItem> loadedOrders = [];
@@ -67,6 +71,8 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final timeStamp = DateTime.now();
+    final url =
+        'https://max-flutter-base.firebaseio.com/orders.json?auth=$authToken';
     try {
       final response = await http.post(url,
           body: json.encode(OrderItem.toMap(
