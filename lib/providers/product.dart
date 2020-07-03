@@ -36,11 +36,12 @@ class Product with ChangeNotifier {
     return isFavorite;
   }
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap(String userId) => {
         "title": title,
         "description": description,
         "imageUrl": imageUrl,
         "price": price,
+        'creatorId': userId,
       };
 
   Map<String, dynamic> toMapPatch() => {

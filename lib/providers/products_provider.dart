@@ -51,7 +51,8 @@ class ProductsProvider with ChangeNotifier {
   ProductsProvider(this.token, this.userId, this._items);
 
   List<Product> get items {
-    return UnmodifiableListView(_items);
+    return [..._items];
+//    return UnmodifiableListView(_items);
   }
 
   List<Product> get favoriteItems {
@@ -64,9 +65,11 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((data) => data.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url =
-        'https://max-flutter-base.firebaseio.com/products.json?auth=$token';
+        'https://max-flutter-base.firebaseio.com/products.json?auth=$token&$filterString';
     try {
       final List<Product> loadedProduct = [];
       final response = await http.get(url);
@@ -92,7 +95,8 @@ class ProductsProvider with ChangeNotifier {
     final url =
         'https://max-flutter-base.firebaseio.com/products.json?auth=$token';
     try {
-      final response = await http.post(url, body: json.encode(product.toMap()));
+      final response =
+          await http.post(url, body: json.encode(product.toMap(userId)));
       if (response.statusCode != 200) return;
       final productOnServerId = json.decode(response.body)['name'];
       print(productOnServerId);
