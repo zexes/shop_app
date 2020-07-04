@@ -8,11 +8,12 @@ import '../screens/products_overview_screen.dart';
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<Auth>(context);
     return Drawer(
       child: Column(
         children: <Widget>[
           AppBar(
-            title: Text('Hello Friend'),
+            title: Text('Greetings ${provider.email}'),
             automaticallyImplyLeading: false, // not to add back button
           ),
           Divider(),

@@ -13,6 +13,7 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
+  String _emailFromResponse;
 
   bool get isAuth {
     return token != null;
@@ -27,6 +28,10 @@ class Auth with ChangeNotifier {
 
   String get userId {
     return _userId;
+  }
+
+  String get email {
+    return _emailFromResponse;
   }
 
   Future<String> _urlBuilder(String action) async {
@@ -50,6 +55,7 @@ class Auth with ChangeNotifier {
             "returnSecureToken": true
           }));
       final responseData = json.decode(response.body);
+      _emailFromResponse = responseData['email'] as String;
       if (responseData['error'] != null)
         throw HttpException(responseData['error']['message']);
 //if no error
