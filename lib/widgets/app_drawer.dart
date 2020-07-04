@@ -8,7 +8,7 @@ import '../screens/products_overview_screen.dart';
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<Auth>(context);
+    final provider = Provider.of<Auth>(context, listen: false);
     return Drawer(
       child: Column(
         children: <Widget>[
