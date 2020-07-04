@@ -26,6 +26,10 @@ class OrdersScreen extends StatelessWidget {
             } else {
               return Consumer<Orders>(
                 builder: (ctx, ordersData, Widget child) {
+                  if (ordersData.orders.isEmpty)
+                    return Center(
+                      child: Text('No Orders Placed Yet'),
+                    );
                   return ListView.builder(
                     itemBuilder: (ctx, index) {
                       return OrderItem(order: ordersData.orders[index]);
