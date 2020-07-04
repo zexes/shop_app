@@ -77,6 +77,13 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, url);
   }
 
+  void logout() {
+    _token = null;
+    _userId = null;
+    _expiryDate = null;
+    notifyListeners();
+  }
+
   Future<String> get _apiKey async {
     Secret sec = await SecretLoader(secretPath: "assets/secrets.json")
         .load(); // Future<Secret>
