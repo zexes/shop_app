@@ -36,12 +36,13 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       setState(() {
         _isLoading = true;
       });
-      Provider.of<ProductsProvider>(context)
+      Provider.of<ProductsProvider>(context, listen: false)
           .fetchAndSetProducts()
-          .then((value) {
-        setState(() {
-          _isLoading = false;
-        });
+          .then((_) {
+        print('am seriously here');
+      });
+      setState(() {
+        _isLoading = false;
       });
     }
     _isInit =
@@ -105,3 +106,10 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
     );
   }
 }
+
+//A ProductsProvider was used after being disposed.
+//I/flutter ( 5761): Once you have called dispose() on a ProductsProvider, it can no longer be used.
+//E/flutter ( 5761): [ERROR:flutter/lib/ui/ui_dart_state.cc(157)] Unhandled Exception: setState() called after dispose(): _ProductOverviewScreenState#5f66f(lifecycle state: defunct, not mounted)
+//E/flutter ( 5761): This error happens if you call setState() on a State object for a widget that no longer appears in the widget tree (e.g., whose parent widget no longer includes the widget in its build). This error can occur when code calls setState() from a timer or an animation callback.
+//E/flutter ( 5761): The preferred solution is to cancel the timer or stop listening to the animation in the dispose() callback. Another solution is to check the "mounted" property of this object before calling setState() to ensure the object is still in the tree.
+//E/flutter ( 5761): This error might indicate a memory leak if setState() is being called because another object is retaining a reference to this State object after it has been removed from the tree. To avoid memory leaks, consider breaking the reference to this object during dispose().

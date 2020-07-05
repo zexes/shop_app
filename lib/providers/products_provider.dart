@@ -83,11 +83,10 @@ class ProductsProvider with ChangeNotifier {
         loadedProduct.add(Product.toProduct(key, value, favoriteData));
       });
       _items = loadedProduct;
-      print(json.decode(response.body));
-    } catch (error) {
-      throw error;
-    } finally {
       notifyListeners();
+//      print(json.decode(response.body));
+    } catch (error) {
+      throw (error);
     }
   }
 
