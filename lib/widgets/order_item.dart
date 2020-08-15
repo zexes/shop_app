@@ -19,51 +19,56 @@ class _OrderItemState extends State<OrderItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10.0),
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('\$${widget.order.amount.toStringAsFixed(2)}'),
-            subtitle: Text(
-              DateFormat('dd/MM/yyy hh:mm').format(widget.order.dateTime),
-            ),
-            trailing: IconButton(
-              icon: Icon(_expanded ? Icons.expand_more : Icons.expand_less),
-              onPressed: () {
-                setState(() {
-                  _expanded = !_expanded;
-                });
-              },
-            ),
-          ),
-          if (_expanded)
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 4.0),
-              height: min(widget.order.products.length * 20.0 + 10, 100),
-              child: ListView(
-                children: widget.order.products
-                    .map(
-                      (product) => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            product.title,
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '${product.quantity}x \$${product.price}',
-                            style:
-                                TextStyle(fontSize: 18.0, color: Colors.grey),
-                          )
-                        ],
-                      ),
-                    )
-                    .toList(),
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: _expanded ? min(widget.order.products.length * 20.0 + 110, 200): 95,
+//      curve: Curves.easeIn,
+      child: Card(
+        margin: EdgeInsets.all(10.0),
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text('\$${widget.order.amount.toStringAsFixed(2)}'),
+              subtitle: Text(
+                DateFormat('dd/MM/yyy hh:mm').format(widget.order.dateTime),
               ),
-            )
-        ],
+              trailing: IconButton(
+                icon: Icon(_expanded ? Icons.expand_more : Icons.expand_less),
+                onPressed: () {
+                  setState(() {
+                    _expanded = !_expanded;
+                  });
+                },
+              ),
+            ),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 4.0),
+                height: _expanded ? min(widget.order.products.length * 20.0 + 10, 100) :0,
+                child: ListView(
+                  children: widget.order.products
+                      .map(
+                        (product) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              product.title,
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '${product.quantity}x \$${product.price}',
+                              style:
+                                  TextStyle(fontSize: 18.0, color: Colors.grey),
+                            )
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }
