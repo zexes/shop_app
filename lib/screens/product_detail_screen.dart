@@ -22,10 +22,13 @@ class ProductDetailScreen extends StatelessWidget {
           children: <Widget>[
             ConstrainedBox(
               constraints: BoxConstraints(maxHeight: 300),
-              child: FadeInImage(
-                  image: NetworkImage(loadedProduct.imageUrl),
-                  placeholder: AssetImage('assets/images/shopping.PNG'),
-                  fit: BoxFit.cover),
+              child: Hero(
+                tag: loadedProduct.id,
+                child: FadeInImage(
+                    image: NetworkImage(loadedProduct.imageUrl),
+                    placeholder: AssetImage('assets/images/shopping.PNG'),
+                    fit: BoxFit.cover),
+              ),
             ),
             SizedBox(height: 10.0),
             Text(
