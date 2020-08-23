@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 import '../providers/products_provider.dart';
 import '../widgets/app_drawer.dart';
 import '../screens/cart_screen.dart';
@@ -52,57 +53,62 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("My Shop"),
-        actions: <Widget>[
-          PopupMenuButton(
-            icon: Icon(
-              Icons.more_vert,
-            ),
-            onSelected: (FilterOptions selectedValue) {
-              setState(() {
-                if (selectedValue == FilterOptions.Favorites) {
-                  _showOnlyFavorites = true;
-                } else {
-                  _showOnlyFavorites = false;
-                }
-              });
-            },
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                child: Text('Only Favorites'),
-                value: FilterOptions.Favorites,
+    return WillPopScope(
+      onWillPop: () {
+        return;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("My Shop"),
+          actions: <Widget>[
+            PopupMenuButton(
+              icon: Icon(
+                Icons.more_vert,
               ),
-              PopupMenuItem(
-                child: Text('Show All'),
-                value: FilterOptions.All,
-              )
-            ],
-          ),
-          Consumer<Cart>(
-            builder: (_, cart, noRebuildChild) {
-              //child : noRebuildChild (ICON) passed outside to prevent rebuilding
-              return Badge(
-                child: noRebuildChild,
-                value: cart.itemCount.toString(),
-              );
-            },
-            child: IconButton(
-              // static
-              splashColor: Theme.of(context).primaryColor,
-              icon: Icon(Icons.shopping_cart),
-              onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.id);
+              onSelected: (FilterOptions selectedValue) {
+                setState(() {
+                  if (selectedValue == FilterOptions.Favorites) {
+                    _showOnlyFavorites = true;
+                  } else {
+                    _showOnlyFavorites = false;
+                  }
+                });
               },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  child: Text('Only Favorites'),
+                  value: FilterOptions.Favorites,
+                ),
+                PopupMenuItem(
+                  child: Text('Show All'),
+                  value: FilterOptions.All,
+                )
+              ],
             ),
-          )
-        ],
+            Consumer<Cart>(
+              builder: (_, cart, noRebuildChild) {
+                //child : noRebuildChild (ICON) passed outside to prevent rebuilding
+                return Badge(
+                  child: noRebuildChild,
+                  value: cart.itemCount.toString(),
+                );
+              },
+              child: IconButton(
+                // static
+                splashColor: Theme.of(context).primaryColor,
+                icon: Icon(Icons.shopping_cart),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(CartScreen.id);
+                },
+              ),
+            )
+          ],
+        ),
+        drawer: AppDrawer(),
+        body: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : ProductGrid(showOnlyFavorites: _showOnlyFavorites),
       ),
-      drawer: AppDrawer(),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ProductGrid(showOnlyFavorites: _showOnlyFavorites),
     );
   }
 }
